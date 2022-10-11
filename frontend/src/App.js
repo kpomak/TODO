@@ -1,5 +1,8 @@
+import request from 'request';
 import React, { Component } from 'react';
 import './App.css';
+import usersList from './components/Users';
+
 
 class App extends Component {
   constructor(props) {
@@ -8,10 +11,24 @@ class App extends Component {
       'users': []
     }
   }
+
+  componentDidMount() {
+    request('http://localhost:8000/api/users/', (error, response, body) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+    const users = JSON.parse(body);
+    this.setState(
+      {'users': users}
+    )
+  });
+  }
+
   render() {
     return (
-      <div>
-        Main App
+      <div className='tab_container'>
+        {usersList(this.state.users)}
       </div>
     );
   }

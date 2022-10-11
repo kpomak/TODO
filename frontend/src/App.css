@@ -1,6 +1,26 @@
-.tab_line {
-  background-color: rgb(16, 216, 16);
-  color: orangered;
+.tab_container {
+  max-width: 75%;
+  margin: 25px auto;
 }
 
+.tab_users {
+  display: flex;
+  flex-direction: column;
+}
+.tab_head {
+  background-color: rgba(7, 2, 255, 0.438);
+  display: flex;
+  justify-content: space-evenly;
+}
 
+.tab_line {
+  background-color: rgba(255, 251, 4, 0.363);
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.tab_cell {
+  width: 150px; 
+  margin: 15px auto;
+  text-align: center;
+}

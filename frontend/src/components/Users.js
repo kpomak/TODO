@@ -1,41 +1,34 @@
 import React from "react";
+import Table from 'react-bootstrap/Table';
 
 
-const userInstance = (user) => {
+const UserInstance = ({user}) => {
 	return (
-		<div className="tab_line" key={user.id}>
-			<div className="tab_cell">
-				{user.first_name}
-			</div>
-			<div className="tab_cell">
-				{user.last_name}
-			</div>
-			<div className="tab_cell">
-				{user.email}
-			</div>
-		</div>
+		<tr>
+          <td>{user.id}</td>
+          <td>{user.first_name}</td>
+          <td>{user.last_name}</td>
+          <td>{user.email}</td>
+        </tr>
 	);
 };
 
-const usersList = (users) => {
-	return (      
-		<div className="tab_users">
-			<div className="tab_head">
-				<div className="tab_cell">
-					Имя
-				</div>
-				<div className="tab_cell">
-					Фамилия
-				</div>
-				<div className="tab_cell">
-					Email
-				</div>
-			</div>
-			{users.map(user => {
-				return userInstance(user);
-			})}
-		</div>       
-	);
-};
+const UsersList = ({users}) => {
+  return (
+    <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>Имя</th>
+          <th>Фамилия</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+	  	{users.map(user => <UserInstance user={user}/>)}
+      </tbody>
+    </Table>
+  );
+}
 
-export default usersList;
+export default UsersList;

@@ -1,8 +1,9 @@
 import request from 'request';
 import React, { Component } from 'react';
 import './App.css';
-import usersList from './components/Users';
-
+import UsersList from './components/Users';
+import Header from './components/Menu';
+import Footer from './components/Footer';
 
 class App extends Component {
   constructor(props) {
@@ -27,8 +28,14 @@ class App extends Component {
 
   render() {
     return (
-      <div className='tab_container'>
-        {usersList(this.state.users)}
+      <div className="sub_body">
+        <div className="top">
+          <Header />
+          <UsersList users={this.state.users}/>
+        </div>
+        <div className="footer bg-light">
+          <Footer />
+        </div>
       </div>
     );
   }

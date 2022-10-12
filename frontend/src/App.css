@@ -1,4 +1,36 @@
-.tab_container {
+.sub_body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
+}
+
+.top {
+  flex-grow: 1;
+}
+
+.footer {
+  flex-shrink: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* .tab_container {
   max-width: 75%;
   margin: 25px auto;
 }
@@ -23,4 +55,4 @@
   width: 150px; 
   margin: 15px auto;
   text-align: center;
-}
+} */

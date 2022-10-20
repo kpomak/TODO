@@ -1,5 +1,6 @@
 import request from 'request';
 import React, { Component } from 'react';
+import { HashRouter } from 'react-router-dom';
 import './App.css';
 import UsersList from './components/Users';
 import Header from './components/Menu';

@@ -1,6 +1,6 @@
 import request from 'request';
 import React, { Component } from 'react';
-import { HashRouter, Routes, Route} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import './App.css';
 import UsersList from './components/Users';
 import Header from './components/Menu';
@@ -35,17 +35,16 @@ class App extends Component {
     return (
       <div className="sub_body">
         <div className="top">
-          <HashRouter>
+          <BrowserRouter>
             <Header />
               <Routes>
-                <Route path='/' element={<UsersList users={this.state.users}/>} />
-                {/* <Route exact path='/' component={() => <AuthorListitems={this.state.authors} />} /> */}
-                {/* <Route exact path='/books' component={() => <BookListitems={this.state.books} />} /> */}
-                {/* <Route path="/author/:id"><AuthorBookList items={this.state.books} /></Route> */}
-                {/* <Redirect from='/authors' to='/' /> */}
-                <Route path='*' element={<NotFound404 />} />
+                <Route path='/' element={<Navigate to='/users' />} />
+                  <Route path='todo' element={<UsersList users={this.state.users}/>} />
+                  <Route path='projects' element={<UsersList users={this.state.users}/>} />
+                  <Route path='users' element={<UsersList users={this.state.users}/>} />
+                  <Route path='*' element={<NotFound404 />} />
               </Routes>
-          </HashRouter>
+          </BrowserRouter>
         </div>
         <div className="footer bg-light">
           <Footer />

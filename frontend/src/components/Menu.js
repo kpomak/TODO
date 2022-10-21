@@ -11,7 +11,7 @@ function Header() {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Link class='navbar-brand' to='todo'>ToDo</Link>
+        <Link className='navbar-brand' to='todo'>ToDo</Link>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav

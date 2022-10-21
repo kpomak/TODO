@@ -11,30 +11,55 @@ import NotFound404 from './components/NotFound404';
 class App extends Component {
   constructor(props) {
     super(props)
+    const apiPath = 'http://localhost:8000/api/'
     this.state = {
-      'users': []
+      'users': [],
+      'projects': [],
+      'todo': [],
+      'api': [
+        apiPath + 'users',
+        apiPath + 'projects',
+        apiPath + 'todo',
+      ]
     }
   }
 
-  componentDidMount() {
-    request('http://localhost:8000/api/users/', (error, response, body) => {
-    if (error) {
-      console.error(error);
-      return;
+  pullData(url) {   
+    let result = [];
+    const key = url.split('/').pop();
+
+    const _request = (url) => {
+      request(url, (error, response, body) => {
+        _pullData(body);
+      });
     }
-    const parsedData = JSON.parse(body);
-    console.log(parsedData.results)
+
+    const _pullData = (body) => {
+      const parsedData = JSON.parse(body);
+      result.push(...parsedData.results);
+      if (!parsedData.next) return;
+      _request(parsedData.next)
+    }
+
+    _request(url);
+
+    console.log(key, result)
     this.setState(
-      {'users': parsedData.results}
+      {[key]: result}
     )
-    console.log(this.state.users)
-  });
+  }
+
+  componentDidMount() {
+    this.state.api.forEach(url => {
+      this.pullData(url)
+    });
   }
 
   render() {
     return (
       <div className="sub_body">
         <div className="top">
+          {console.log('thisstate.users in render', this.state)}
           <BrowserRouter>
             <Header />
               <Routes>

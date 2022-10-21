@@ -7,6 +7,7 @@ class ProjectModelSerializer(ModelSerializer):
     class Meta:
         model = Project
         fields = [
+            "id",
             "project_name",
             "link",
             "description",
@@ -17,4 +18,12 @@ class ProjectModelSerializer(ModelSerializer):
 class ToDoModelSerializer(ModelSerializer):
     class Meta:
         model = ToDo
-        fields = ["project", "user", "body", "is_active", "created", "deleted"]
+        fields = [
+            "id",
+            "project",
+            "user",
+            "body",
+            "is_active",
+            "created",
+            "deleted",
+        ]

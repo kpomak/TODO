@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import './App.css';
 import UsersList from './components/Users';
+import ProjectList from './components/Projects';
+import ToDoList from './components/ToDo';
 import Header from './components/Menu';
 import Footer from './components/Footer';
 import NotFound404 from './components/NotFound404';
@@ -43,7 +45,6 @@ class App extends Component {
 
     _request(url);
 
-    console.log(key, result)
     this.setState(
       {[key]: result}
     )
@@ -59,13 +60,13 @@ class App extends Component {
     return (
       <div className="sub_body">
         <div className="top">
-          {console.log('thisstate.users in render', this.state)}
           <BrowserRouter>
             <Header />
               <Routes>
-                <Route path='/' element={<Navigate to='/users' />} />
-                  <Route path='todo' element={<UsersList users={this.state.users}/>} />
-                  <Route path='projects' element={<UsersList users={this.state.users}/>} />
+                <Route path='/' element={<Navigate to='todo' />} />
+                  <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
+                    projects={this.state.projects} users={this.state.users}/>} />
+                  <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
                   <Route path='users' element={<UsersList users={this.state.users}/>} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>

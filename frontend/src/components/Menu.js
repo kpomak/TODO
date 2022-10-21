@@ -11,7 +11,7 @@ function Header() {
   return (
     <Navbar bg="light" expand="lg">
       <Container fluid>
-        <Navbar.Brand ><Link to='todo'>ToDo</Link></Navbar.Brand>
+        <Link class='navbar-brand' to='todo'>ToDo</Link>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -19,8 +19,8 @@ function Header() {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link><Link to='projects'>Project</Link></Nav.Link>
-            <Nav.Link><Link to='users'>Users</Link></Nav.Link>           
+            <Link className='nav-link' to='projects'>Projects</Link>
+            <Link className='nav-link' to='users'>Users</Link>
             <Nav.Link href="#action2">Link</Nav.Link>
             <NavDropdown title="Link" id="navbarScrollingDropdown">
               <NavDropdown.Item href="#action3">Action</NavDropdown.Item>

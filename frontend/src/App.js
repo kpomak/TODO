@@ -1,6 +1,6 @@
 import request from 'request';
 import React, { Component } from 'react';
-import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css';
 import UsersList from './components/Users';
 import ProjectList from './components/Projects';
@@ -8,6 +8,8 @@ import ToDoList from './components/ToDo';
 import Header from './components/Menu';
 import Footer from './components/Footer';
 import NotFound404 from './components/NotFound404';
+import ProjectDetail from './components/ProjectDetail';
+import Home from './components/Home';
 
 
 class App extends Component {
@@ -36,23 +38,23 @@ class App extends Component {
       });
     }
 
-    const _pullData = (body) => {
+    const _pullData = function (body) {
       const parsedData = JSON.parse(body);
       result.push(...parsedData.results);
-      if (!parsedData.next) return;
-      _request(parsedData.next)
+      if (!parsedData.next)
+        return;
+      _request(parsedData.next);
     }
 
     _request(url);
-
     this.setState(
-      {[key]: result}
+      { [key]: result }
     )
   }
 
   componentDidMount() {
     this.state.api.forEach(url => {
-      this.pullData(url)
+      this.pullData(url);
     });
   }
 
@@ -63,10 +65,11 @@ class App extends Component {
           <BrowserRouter>
             <Header />
               <Routes>
-                <Route path='/' element={<Navigate to='todo' />} />
+                <Route path='/' element={<Home/>} />
+                  <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
+                    <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
                     projects={this.state.projects} users={this.state.users}/>} />
-                  <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
                   <Route path='users' element={<UsersList users={this.state.users}/>} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>

@@ -8,18 +8,12 @@ const ToDoInstance = ({toDo, projects, users}) => {
           <td>{toDo.id}</td>
           <td>
             {projects.find(project => {
-              if (project.id === toDo.project) {
-                return project
-              }
-              return null
+              return (project.id === toDo.project) ? project : null
             }).projectName}
           </td>
           <td>
             {users.find(user => {
-              if (user.id === toDo.user) {
-                return user
-              }
-              return null
+              return (user.id === toDo.user) ? user : null
             }).username}
           </td>
           <td>{toDo.body}</td>

@@ -12,6 +12,7 @@ import ProjectDetail from './components/ProjectDetail';
 import Home from './components/Home';
 
 
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -47,15 +48,17 @@ class App extends Component {
     }
 
     _request(url);
-    this.setState(
-      { [key]: result }
-    )
+
+    return { [key]: result };
   }
 
   componentDidMount() {
-    this.state.api.forEach(url => {
-      this.pullData(url);
-    });
+    const pulledData = this.state.api.map(url => {
+      return this.pullData(url);
+    }); 
+    setTimeout(() => {
+      this.setState(Object.assign(...pulledData));
+    }, 500)
   }
 
   render() {

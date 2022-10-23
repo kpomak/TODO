@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 
 
 function ProjectDetail( {projects} ) {
+  if (projects.length === 0) return;
   let { id } = useParams();
   const filteredProject = projects.find(project => {
     return (project.id === parseInt(id)) ? project : null

@@ -25,7 +25,7 @@ const UsersList = ({users}) => {
         </tr>
       </thead>
       <tbody>
-	  	{users.map(user => <UserInstance user={user}/>)}
+	  	{users.map(user => <UserInstance key={user.id} user={user}/>)}
       </tbody>
     </Table>
   );

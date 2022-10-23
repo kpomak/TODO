@@ -1,12 +1,13 @@
-from rest_framework.serializers import HyperlinkedModelSerializer
+from rest_framework.serializers import ModelSerializer
 
 from todoapp.models import Project, ToDo
 
 
-class ProjectModelSerializer(HyperlinkedModelSerializer):
+class ProjectModelSerializer(ModelSerializer):
     class Meta:
         model = Project
         fields = [
+            "id",
             "project_name",
             "link",
             "description",
@@ -14,7 +15,15 @@ class ProjectModelSerializer(HyperlinkedModelSerializer):
         ]
 
 
-class ToDoModelSerializer(HyperlinkedModelSerializer):
+class ToDoModelSerializer(ModelSerializer):
     class Meta:
         model = ToDo
-        fields = ["project", "user", "body", "is_active", "created", "deleted"]
+        fields = [
+            "id",
+            "project",
+            "user",
+            "body",
+            "is_active",
+            "created",
+            "deleted",
+        ]

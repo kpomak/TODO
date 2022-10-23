@@ -25,5 +25,10 @@ class ToDo(models.Model):
     is_active = models.BooleanField(default=True)
     deleted = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if not (self.user in self.project.project_team.all()):
+            return
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.user} on {self.project} at {self.created}"

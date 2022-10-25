@@ -7,7 +7,7 @@ class Home extends Component {
     return (
       <div className="container-xxl">
         <div className="d-flex align-items-center flex-column">
-          <h1>Hello, {(this.props.isAuthentificated()) ? 'user' : 'stranger'}!</h1>
+          <h1>Hello, {(this.props.isAuthentificated) ? 'user' : 'stranger'}!</h1>
           <h2>Welcome to ToDo task list!</h2>
         </div>
       </div>

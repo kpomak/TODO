@@ -10,7 +10,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 class Header extends Component{
   
   logOut() {
-    this.props.saveToken('')
+    this.props.saveToken()
   }
 
   render() {
@@ -28,10 +28,9 @@ class Header extends Component{
               <Link className='nav-link' to='projects'>Projects</Link>
               <Link className='nav-link' to='users'>Users</Link>
               <Link className='nav-link' to='/'>Home</Link>
-              {this.props.isAuthentificated()
-                ? <Link className='nav-link' to="/" >Logout</Link>
+              {this.props.isAuthentificated
+                ? <Link className='nav-link' to="/" onClick={() => this.logOut()}>Logout</Link>
                 : <Link className='nav-link' to="login">Sign in</Link>}
-              <Link className='nav-link' to="/" onClick={() => this.logOut()}>Logout</Link>
               <NavDropdown title="Dropdown" id="navbarScrollingDropdown">
                 <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
                 <NavDropdown.Item href="#action4">

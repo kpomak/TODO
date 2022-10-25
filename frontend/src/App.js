@@ -46,6 +46,10 @@ class App extends Component {
   }
 
   isAuthentificated() {
+    if (!!this.state.token) {
+      console.log('+')
+    } else console.log('-')
+    console.log('auth', this.state.token)
     return (this.state.token !== '');
   }
 
@@ -103,7 +107,7 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header isAuthentificated={() => {this.isAuthentificated()}} saveToken={() => {this.saveToken()}}/>
+            <Header isAuthentificated={() => {this.isAuthentificated()}} saveToken={() => {this.saveToken('')}}/>
               <Routes>
                 <Route path='/' element={<Home isAuthentificated={() => {this.isAuthentificated()}}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />

@@ -1,4 +1,3 @@
-import request from 'request';
 import React, { Component } from 'react';
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css';
@@ -10,7 +9,8 @@ import Footer from './components/Footer';
 import NotFound404 from './components/NotFound404';
 import ProjectDetail from './components/ProjectDetail';
 import Home from './components/Home';
-
+import axios from 'axios';
+import Cookies from 'universal-cookie';
 
 
 class App extends Component {
@@ -29,36 +29,42 @@ class App extends Component {
     }
   }
 
-  pullData(url) {   
-    let result = [];
-    const key = url.split('/').pop();
+  getToken (username, password) {
+    axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
+      .then(response => this.saveToken(response.data['token']))
+      .catch(error => alert('Wrong value of username or password'));
+  }
 
-    const _request = (url) => {
-      request(url, (error, response, body) => {
-        _pullData(body);
+  saveToken (token) {
+    const cookie = new Cookies();
+    cookie.set('token', token);
+    this.setState({'token': token});
+  }
+
+  pullData () {
+    const fetcher = (url, key, result=[]) => {
+      axios.get(url).then(response => {
+        result.push(...response.data.results);
+        if (!response.data.next) {
+          this.setState({[key]: result});
+          return;
+        }
+        fetcher(response.data.next, key, result);
       });
     }
 
-    const _pullData = function (body) {
-      const parsedData = JSON.parse(body);
-      result.push(...parsedData.results);
-      if (!parsedData.next)
-        return;
-      _request(parsedData.next);
+    const _pullData = (url) => {
+      const key = url.split('/').pop();
+      fetcher(url, key);
     }
 
-    _request(url);
-
-    return { [key]: result };
+    this.state.api.forEach(url => {
+      _pullData(url);
+    })
   }
 
   componentDidMount() {
-    const pulledData = this.state.api.map(url => {
-      return this.pullData(url);
-    }); 
-    setTimeout(() => {
-      this.setState(Object.assign(...pulledData));
-    }, 500)
+    this.pullData();
   }
 
   render() {

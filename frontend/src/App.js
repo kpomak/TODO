@@ -11,6 +11,7 @@ import ProjectDetail from './components/ProjectDetail';
 import Home from './components/Home';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
+import LoginForm from './components/LoginForm';
 
 
 class App extends Component {
@@ -21,6 +22,7 @@ class App extends Component {
       'users': [],
       'projects': [],
       'todo': [],
+      'token': '',
       'api': [
         apiPath + 'users',
         apiPath + 'projects',
@@ -31,25 +33,54 @@ class App extends Component {
 
   getToken (username, password) {
     axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
-      .then(response => this.saveToken(response.data['token']))
+      .then(response => {
+        this.saveToken(response.data['token'])})
       .catch(error => alert('Wrong value of username or password'));
   }
 
   saveToken (token) {
     const cookie = new Cookies();
     cookie.set('token', token);
-    this.setState({'token': token});
+    cookie.set('SameSite', 'None');
+    this.setState({'token': token}, () => this.pullData());
+  }
+
+  isAuthentificated() {
+    return (this.state.token !== '');
+  }
+
+  logOut() {
+    this.saveToken('');
+  }
+
+  restoreToken () {
+    const cookie = new Cookies();
+    const token = cookie.get('token');
+    this.setState({'token': token}, () => this.pullData());
+  }
+
+  getHeaders () {
+    let headers = {
+      "Content-Type": "application/json"
+    }
+    if (this.isAuthentificated()) {
+      headers['Authorization'] = 'Token ' + this.state.token
+    }
+    return headers
   }
 
   pullData () {
+    const headers = this.getHeaders();
     const fetcher = (url, key, result=[]) => {
-      axios.get(url).then(response => {
+      axios.get(url, {'headers': headers}).then(response => {
         result.push(...response.data.results);
         if (!response.data.next) {
           this.setState({[key]: result});
           return;
         }
         fetcher(response.data.next, key, result);
+      }).catch(() => {
+        this.setState({[key]: []});
       });
     }
 
@@ -64,7 +95,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.pullData();
+    this.restoreToken();
   }
 
   render() {
@@ -72,9 +103,10 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header />
+            <Header isAuthentificated={() => {this.isAuthentificated()}} saveToken={() => {this.saveToken()}}/>
               <Routes>
-                <Route path='/' element={<Home/>} />
+                <Route path='/' element={<Home isAuthentificated={() => {this.isAuthentificated()}}/>} />
+                  <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
                   <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
                     <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}

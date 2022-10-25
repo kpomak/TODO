@@ -1,6 +1,6 @@
-import Button from 'react-bootstrap/Button';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
+import { Link } from 'react-router-dom';
 
 
 class LoginForm extends Component {
@@ -12,41 +12,42 @@ class LoginForm extends Component {
 		}
 	}
 
-	handleChange(event) {
-		this.setState(
-			{[event.target.name]: event.taget.value}
-		);
+	handleChange(target) {
+		this.setState({[target.name]: target.value});
 	}
 
 	handleSubmit(event) {
-		this.props.getToken(this.state.username, this.state.password)
-		event.preventDefault()
+		this.props.getToken(this.state.username, this.state.password);
 	}
 
 	render() {
 		return (
-			<Form onSubmit={(event) => this.handleSubmit(event)}>
-				<Form.Group className="mb-3" controlId="formBasicText">
-					<Form.Label>Username</Form.Label>
-					<Form.Control type="text" name="username" placeholder="Username"
-						onChange={(event) => this.handleChange(event)}/>
-					<Form.Text className="text-muted">
-						Enter your username here.
-					</Form.Text>
-				</Form.Group> 
+			<div className="container-xxl">
+				<div className="d-flex justify-content-center">
+					<Form onSubmit={(event) => this.handleSubmit(event)}>
+						<Form.Group className="mb-3" controlId="formBasicText">
+							<Form.Label>Username</Form.Label>
+							<Form.Control type="text" name="username" placeholder="Username"
+								onChange={({target}) => this.handleChange(target)}/>
+							<Form.Text className="text-muted">
+								Enter your username here.
+							</Form.Text>
+						</Form.Group> 
 
-				<Form.Group className="mb-3" controlId="formBasicPassword">
-					<Form.Label>Password</Form.Label>
-					<Form.Control type="password" name="password" placeholder="Password" 
-						onChange={(event) => this.handleChange(event)}/>
-				</Form.Group>
-				<Form.Group className="mb-3" controlId="formBasicCheckbox">
-					<Form.Check type="checkbox" label="Check me out" />
-				</Form.Group>
-				<Button variant="primary" type="submit">
-					Submit
-				</Button>
-			</Form>
+						<Form.Group className="mb-3" controlId="formBasicPassword">
+							<Form.Label>Password</Form.Label>
+							<Form.Control type="password" name="password" placeholder="Password" 
+								onChange={({target}) => this.handleChange(target)}/>
+							<Form.Text className="text-muted">
+								Пароль на эльфийском.
+							</Form.Text>
+						</Form.Group>
+
+							<Link className='btn btn-primary' to='../' 
+								onClick={(event) => this.handleSubmit(event)}>Submit</Link>
+					</Form>
+				</div>
+		  </div>
 		);
 	}
 }

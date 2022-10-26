@@ -23,6 +23,7 @@ class App extends Component {
       'projects': [],
       'todo': [],
       'token': '',
+      'authUserName': '',
       'api': [
         apiPath + 'users',
         apiPath + 'projects',
@@ -46,15 +47,7 @@ class App extends Component {
   }
 
   isAuthentificated() {
-    if (!!this.state.token) {
-      console.log('+')
-    } else console.log('-')
-    console.log('auth', this.state.token)
     return !!this.state.token;
-  }
-
-  logOut() {
-    this.saveToken('');
   }
 
   restoreToken () {
@@ -109,7 +102,7 @@ class App extends Component {
           <BrowserRouter>
             <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}}/>
               <Routes>
-                <Route path='/' element={<Home isAuthentificated={() => {this.isAuthentificated()}}/>} />
+                <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
                   <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
                     <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />

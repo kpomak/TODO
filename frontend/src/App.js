@@ -23,7 +23,8 @@ class App extends Component {
       'projects': [],
       'todo': [],
       'token': '',
-      'authUserName': '',
+      'username': '',
+      'userFirstName': '',
       'api': [
         apiPath + 'users',
         apiPath + 'projects',
@@ -35,15 +36,25 @@ class App extends Component {
   getToken (username, password) {
     axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
       .then(response => {
-        this.saveToken(response.data['token'])})
+        this.saveToken(response.data['token'], username)})
       .catch(error => alert('Wrong value of username or password'));
   }
 
-  saveToken (token) {
+  setUsername(key) {
+    if (key !== 'users') return;
+    this.setState({'userFirstName': this.state.users.find(user => {
+      return (user.username === this.state.username)
+        ? user
+        : null}).firstName
+    });
+  }
+
+  saveToken (token, username='') {
     const cookie = new Cookies();
     cookie.set('token', token);
+    cookie.set('username', username);
     cookie.set('SameSite', 'None');
-    this.setState({'token': token}, () => this.pullData());
+    this.setState({'token': token, 'username': username}, () => this.pullData());
   }
 
   isAuthentificated() {
@@ -53,7 +64,8 @@ class App extends Component {
   restoreToken () {
     const cookie = new Cookies();
     const token = cookie.get('token');
-    this.setState({'token': token}, () => this.pullData());
+    const username = cookie.get('username')
+    this.setState({'token': token, 'username': username}, () => this.pullData());
   }
 
   getHeaders () {
@@ -72,7 +84,7 @@ class App extends Component {
       axios.get(url, {'headers': headers}).then(response => {
         result.push(...response.data.results);
         if (!response.data.next) {
-          this.setState({[key]: result});
+          this.setState({[key]: result}, () => this.setUsername(key));
           return;
         }
         fetcher(response.data.next, key, result);
@@ -100,7 +112,7 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}}/>
+            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} userFirstName={this.state.userFirstName}/>
               <Routes>
                 <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />

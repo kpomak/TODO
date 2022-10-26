@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
+
 class Header extends Component{
   constructor(props) {
     super(props)
@@ -31,6 +32,7 @@ class Header extends Component{
               {this.auth()
                 ? <Link className='nav-link' to="/" onClick={() => this.logOut()}>Logout</Link>
                 : <Link className='nav-link' to="login">Sign in</Link>}
+              {this.auth() ? <div className='nav-link'>{`Hi, ${this.props.userFirstName}!`}</div> : null }
             </Nav>
             <Form className="d-flex">
               <Form.Control

@@ -1,4 +1,3 @@
-import request from 'request';
 import React, { Component } from 'react';
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import './App.css';
@@ -10,7 +9,9 @@ import Footer from './components/Footer';
 import NotFound404 from './components/NotFound404';
 import ProjectDetail from './components/ProjectDetail';
 import Home from './components/Home';
-
+import axios from 'axios';
+import Cookies from 'universal-cookie';
+import LoginForm from './components/LoginForm';
 
 
 class App extends Component {
@@ -21,6 +22,9 @@ class App extends Component {
       'users': [],
       'projects': [],
       'todo': [],
+      'token': '',
+      'username': '',
+      'userFirstName': '',
       'api': [
         apiPath + 'users',
         apiPath + 'projects',
@@ -29,36 +33,78 @@ class App extends Component {
     }
   }
 
-  pullData(url) {   
-    let result = [];
-    const key = url.split('/').pop();
+  getToken (username, password) {
+    axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
+      .then(response => {
+        this.saveToken(response.data['token'], username)})
+      .catch(error => alert('Wrong value of username or password'));
+  }
 
-    const _request = (url) => {
-      request(url, (error, response, body) => {
-        _pullData(body);
+  setUsername(key) {
+    if (key !== 'users') return;
+    this.setState({'userFirstName': this.state.users.find(user => {
+      return (user.username === this.state.username)
+        ? user
+        : null}).firstName
+    });
+  }
+
+  saveToken (token, username='') {
+    const cookie = new Cookies();
+    cookie.set('token', token);
+    cookie.set('username', username);
+    cookie.set('SameSite', 'None');
+    this.setState({'token': token, 'username': username}, () => this.pullData());
+  }
+
+  isAuthentificated() {
+    return !!this.state.token;
+  }
+
+  restoreToken () {
+    const cookie = new Cookies();
+    const token = cookie.get('token');
+    const username = cookie.get('username')
+    this.setState({'token': token, 'username': username}, () => this.pullData());
+  }
+
+  getHeaders () {
+    let headers = {
+      "Content-Type": "application/json"
+    }
+    if (this.isAuthentificated()) {
+      headers['Authorization'] = 'Token ' + this.state.token
+    }
+    return headers
+  }
+
+  pullData () {
+    const headers = this.getHeaders();
+    const fetcher = (url, key, result=[]) => {
+      axios.get(url, {'headers': headers}).then(response => {
+        result.push(...response.data.results);
+        if (!response.data.next) {
+          this.setState({[key]: result}, () => this.setUsername(key));
+          return;
+        }
+        fetcher(response.data.next, key, result);
+      }).catch(() => {
+        this.setState({[key]: [], 'userFirstName': ''});
       });
     }
 
-    const _pullData = function (body) {
-      const parsedData = JSON.parse(body);
-      result.push(...parsedData.results);
-      if (!parsedData.next)
-        return;
-      _request(parsedData.next);
+    const _pullData = (url) => {
+      const key = url.split('/').pop();
+      fetcher(url, key);
     }
 
-    _request(url);
-
-    return { [key]: result };
+    this.state.api.forEach(url => {
+      _pullData(url);
+    })
   }
 
   componentDidMount() {
-    const pulledData = this.state.api.map(url => {
-      return this.pullData(url);
-    }); 
-    setTimeout(() => {
-      this.setState(Object.assign(...pulledData));
-    }, 500)
+    this.restoreToken();
   }
 
   render() {
@@ -66,9 +112,10 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header />
+            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} userFirstName={this.state.userFirstName}/>
               <Routes>
-                <Route path='/' element={<Home/>} />
+                <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
+                  <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
                   <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
                     <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}

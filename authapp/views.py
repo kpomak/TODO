@@ -7,7 +7,7 @@ from authapp.serializers import CustomUserModelSerializer
 
 
 class CustomUserLimitOffsetPagination(LimitOffsetPagination):
-    default_limit = 2
+    default_limit = 30
 
 
 class CustomUserModelViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):

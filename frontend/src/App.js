@@ -89,7 +89,7 @@ class App extends Component {
         }
         fetcher(response.data.next, key, result);
       }).catch(() => {
-        this.setState({[key]: []});
+        this.setState({[key]: [], 'userFirstName': ''});
       });
     }
 

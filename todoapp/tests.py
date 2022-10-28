@@ -7,9 +7,6 @@ from authapp.models import CustomUser
 from todoapp.models import Project, ToDo
 from todoapp.views import ProjectModelViewSet
 
-# 2. Написать минимум один тест для API, используя APIClient.
-# 3. Написать минимум один тест для API, используя APITestCase.
-
 
 class TestProjectsViewSet(TestCase):
     def setUp(self):
@@ -42,7 +39,7 @@ class TestProjectsViewSet(TestCase):
 
     def test_edit_task_admin(self):
         project = mixer.blend(Project, project_team=[self.admin])
-        todo = ToDo.objects.create(project=project, user=self.admin, body="Other body")
+        todo = mixer.blend(ToDo, project=project, user=self.admin)
         client = APIClient()
         client.login(username="admin", password="admin")
         response = client.put(
@@ -73,15 +70,17 @@ class TestToDoViewSet(APITestCase):
         response = self.client.get("/api/todo/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-
-#     def test_edit_admin(self):
-#         author = Author.objects.create(name='Пушкин', birthday_year=1799)
-#         book = Book.objects.create(name='Пиковая дама', author=author)
-#         admin = User.objects.create_superuser('admin', 'admin@admin.com',
-# 'admin123456')
-#         self.client.login(username='admin', password='admin123456')
-#         response = self.client.put(f'/api/books/{book.id}/', {'name': 'Руслан и
-# Людмила', 'author': book.author.id})
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-# book = Book.objects.get(id=book.id)
-#         self.assertEqual(book.name,'Руслан и Людмила')
+    def test_created_count_admin(self):
+        new_project = mixer.blend(Project)
+        projects_count = Project.objects.count()
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(
+            "/api/projects/",
+            {
+                "project_name": f"{new_project.project_name}_v2.0",
+                "project_team": [user.id for user in CustomUser.objects.all()],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertGreater(Project.objects.count(), projects_count)

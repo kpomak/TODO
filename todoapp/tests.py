@@ -84,3 +84,16 @@ class TestToDoViewSet(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertGreater(Project.objects.count(), projects_count)
+
+
+class TestJWTToken(APITestCase):
+    def test_api_jwt(self):
+        CustomUser.objects.create_user(username="test", email="test@test.com", password="test", is_active=True)
+
+        response = self.client.post("/api-jwt/", {"username": "test", "password": "test"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue("access" in response.data)
+
+        token = response.data["access"]
+        response = self.client.post("/api-jwt/verify/", {"token": token}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

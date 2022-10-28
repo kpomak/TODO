@@ -1,41 +1,40 @@
-# import json
-from unittest import TestCase
+from django.test import TestCase
+from mixer.backend.django import mixer
+from rest_framework import status
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 from authapp.models import CustomUser
-# from mixer.backend.django import mixer
-from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.test import APIClient, APIRequestFactory, APISimpleTestCase, APITestCase, force_authenticate
-
 from todoapp.views import ProjectModelViewSet
 
-# 1. Написать минимум один тест для API, используя APIRequestFactory.
 # 2. Написать минимум один тест для API, используя APIClient.
 # 3. Написать минимум один тест для API, используя APITestCase.
 
+
 class TestProjectsViewSet(TestCase):
-
     def setUp(self):
-        factory = APIRequestFactory()
-        self.request = factory.get('/api/projects/')
-        return super().setUp()
-
+        super().setUp()
+        self.factory = APIRequestFactory()
+        self.admin = CustomUser.objects.create_superuser("admin", "admin@admin.com", "admin")
 
     def test_get_list(self):
-
-        view = ProjectModelViewSet.as_view({'get': 'list'})
-        response = view(self.request)
+        request = self.factory.get("/api/projects/")
+        view = ProjectModelViewSet.as_view({"get": "list"})
+        response = view(request)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-
     def test_get_admin(self):
-        admin = CustomUser.objects.create_superuser('administrator', 'admin@aaa.com', 'admin')
-        force_authenticate(self.request, admin)
-        view = ProjectModelViewSet.as_view({'get': 'list'})
-        response = view(self.request)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-
-
-
+        user = mixer.blend(CustomUser)
+        request = self.factory.post(
+            "/api/projects/",
+            {
+                "project_name": "ToDo",
+                "link": "http://todo.com",
+                "description": "Tasklist application",
+                "project_team": [user.id],
+            },
+            format="json",
+        )
+        force_authenticate(request, self.admin)
+        view = ProjectModelViewSet.as_view({"post": "create"})
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)

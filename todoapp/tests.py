@@ -1,7 +1,7 @@
 from django.test import TestCase
 from mixer.backend.django import mixer
 from rest_framework import status
-from rest_framework.test import APIRequestFactory, force_authenticate
+from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
 
 from authapp.models import CustomUser
 from todoapp.views import ProjectModelViewSet
@@ -22,7 +22,7 @@ class TestProjectsViewSet(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_get_admin(self):
+    def test_post_auth(self):
         user = mixer.blend(CustomUser)
         request = self.factory.post(
             "/api/projects/",
@@ -38,3 +38,16 @@ class TestProjectsViewSet(TestCase):
         view = ProjectModelViewSet.as_view({"post": "create"})
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class TestToDoViewSet(APITestCase):
+    fixtures = (
+        "TODO/authapp/fixtures/users_data.json",
+        "TODO/authapp/fixtures/group_data.json",
+        "TODO/todoapp/fixtures/projects_data.json",
+        "TODO/todoapp/fixtures/todo_data.json",
+    )
+
+    def test_get_list(self):
+        response = self.client.get("/api/todo/")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

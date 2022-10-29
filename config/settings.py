@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "authapp",
     "todoapp",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [

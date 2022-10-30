@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "authapp",
     "todoapp",
     "drf_yasg",
+    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -139,3 +140,5 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.AcceptHeaderVersioning",
 }
+
+GRAPHENE = {"SCHEMA": "config.schema.schema"}

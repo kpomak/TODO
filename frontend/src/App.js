@@ -33,6 +33,14 @@ class App extends Component {
     }
   }
 
+  deleteItem(path, id) {
+    const headers = this.getHeaders();
+    axios.delete(`http://localhost:8000/api/${path}/${id}/`, {'headers': headers})
+      .then(response => {
+        this.pullData()
+      }).catch(error => console.log(error));
+  }
+
   getToken (username, password) {
     axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
       .then(response => {
@@ -116,10 +124,10 @@ class App extends Component {
               <Routes>
                 <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
-                  <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
+                  <Route path='projects' element={<ProjectList projects={this.state.projects} deleteItem={(item, id) => this.deleteItem(item, id) }/>} />
                     <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
-                    projects={this.state.projects} users={this.state.users}/>} />
+                    projects={this.state.projects} users={this.state.users} deleteItem={(item, id) => this.deleteItem(item, id)} />} />
                   <Route path='users' element={<UsersList users={this.state.users}/>} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>

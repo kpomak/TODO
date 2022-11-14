@@ -13,7 +13,8 @@ class Project(models.Model):
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.project_name}"
+        team = list(self.project_team.values_list("username", flat=True))
+        return f"{self.project_name} {team}"
 
 
 class ToDo(models.Model):

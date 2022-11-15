@@ -23,8 +23,8 @@ class App extends Component {
       'projects': [],
       'todo': [],
       'token': '',
+      'user': {}, 
       'username': '',
-      'userFirstName': '',
       'api': [
         apiPath + 'users',
         apiPath + 'projects',
@@ -48,12 +48,12 @@ class App extends Component {
       .catch(error => alert('Wrong value of username or password'));
   }
 
-  setUsername(key) {
+  setUser(key) {
     if (key !== 'users') return;
-    this.setState({'userFirstName': this.state.users.find(user => {
+    this.setState({'user': this.state.users.find(user => {
       return (user.username === this.state.username)
         ? user
-        : null}).firstName
+        : null})
     });
   }
 
@@ -92,12 +92,14 @@ class App extends Component {
       axios.get(url, {'headers': headers}).then(response => {
         result.push(...response.data.results);
         if (!response.data.next) {
-          this.setState({[key]: result}, () => this.setUsername(key));
+          this.setState({[key]: result}, () => {
+            this.setUser(key);
+          });
           return;
         }
         fetcher(response.data.next, key, result);
       }).catch(() => {
-        this.setState({[key]: [], 'userFirstName': ''});
+        this.setState({[key]: [], 'user': {}});
       });
     }
 
@@ -120,7 +122,7 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} userFirstName={this.state.userFirstName}/>
+            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} user={this.state.user}/>
               <Routes>
                 <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />

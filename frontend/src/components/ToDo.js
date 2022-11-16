@@ -43,7 +43,7 @@ const ToDoList = ({toDoTasks, projects, users, deleteItem}) => {
         {toDoTasks.map(toDo => <ToDoInstance key={toDo.id} toDo={toDo} projects={projects} users={users} deleteItem={deleteItem}/>)}
         </tbody>
       </Table>
-      <Link to='/projects/create' className='btn btn-primary'>Create new</Link>
+      <Link to='create' className='btn btn-primary'>Create new</Link>
     </div>
   );
 }

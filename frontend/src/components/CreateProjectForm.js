@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 class CreateProject extends Component {
 	constructor(props) {
 		super(props)
+		this.users = this.props.users
+		this.createProject = this.props.createProject
 		this.state = {
 			"projectName": "",
 			"link": "",
@@ -30,7 +32,7 @@ class CreateProject extends Component {
 	}
 
 	handleSubmit(event) {
-		this.props.createProject('projects/', this.state);
+		this.createProject('projects/', this.state);
 	}
 
 	render() {
@@ -59,14 +61,14 @@ class CreateProject extends Component {
 						<Form.Group className="mb-3" controlId="formBasicProjectTeam">
 							<Form.Label>Project team</Form.Label>
 							<Form.Select multiple={true} name="projectTeam" value={this.state.projectTeam} onChange={({target}) => this.handleSelect(target)}>
-          			{this.props.users.map(user => {
+          			{this.users.map(user => {
 									return <option key={`${user.id}`} value={`${user.id}`}>{`${user.username}`}</option>
 								})}
         			</Form.Select>
 						</Form.Group>
 
 						<Link className='btn btn-primary' to='../projects/' 
-										onClick={(event) => this.handleSubmit(event)}>Submit</Link>
+										onClick={(event) => this.handleSubmit(event)}>Create</Link>
 					</Form >
 				</div>
 			</div>

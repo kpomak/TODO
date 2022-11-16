@@ -13,6 +13,7 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 import LoginForm from './components/LoginForm';
 import CreateProject from './components/CreateProjectForm';
+import CreateTodo from './components/CreateTodo';
 
 
 class App extends Component {
@@ -141,6 +142,7 @@ class App extends Component {
                     <Route path='projects/create' element={<CreateProject users={this.state.users} createProject={(url, data) => this.createItem(url, data)}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
                     projects={this.state.projects} users={this.state.users} deleteItem={(item, id) => this.deleteItem(item, id)} />} />
+                    <Route path='todo/create' element={<CreateTodo projects={this.state.projects} user={this.state.user} createTodo={(url, data) => this.createItem(url,data)}/>}/>
                   <Route path='users' element={<UsersList users={this.state.users}/>} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>

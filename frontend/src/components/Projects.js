@@ -35,7 +35,7 @@ const ProjectList = ({projects, deleteItem}) => {
         {projects.map(project => <ProjectInstance key={project.id} project={project} deleteItem={deleteItem}/>)}
         </tbody>
       </Table>
-      <Link to='/projects/create' className='btn btn-primary'>Create new</Link>
+      <Link to='create' className='btn btn-primary'>Create new</Link>
     </div>
   );
 }

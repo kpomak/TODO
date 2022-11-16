@@ -12,12 +12,14 @@ import Home from './components/Home';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import LoginForm from './components/LoginForm';
+import CreateProject from './components/CreateProjectForm';
 
 
 class App extends Component {
   constructor(props) {
     super(props)
-    const apiPath = 'http://localhost:8000/api/'
+    this.serverPath = "http://localhost:8000/"
+    this.apiPath = this.serverPath + "api/"
     this.state = {
       'users': [],
       'projects': [],
@@ -26,23 +28,23 @@ class App extends Component {
       'user': {}, 
       'username': '',
       'api': [
-        apiPath + 'users',
-        apiPath + 'projects',
-        apiPath + 'todo',
+        this.apiPath + 'users/',
+        this.apiPath + 'projects/',
+        this.apiPath + 'todo/',
       ]
     }
   }
 
   deleteItem(path, id) {
     const headers = this.getHeaders();
-    axios.delete(`http://localhost:8000/api/${path}/${id}/`, {'headers': headers})
+    axios.delete(this.apiPath + `${path}/${id}`, {'headers': headers})
       .then(response => {
         this.pullData()
       }).catch(error => console.log(error));
   }
 
   getToken (username, password) {
-    axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
+    axios.post(this.serverPath + 'api-token-auth/', {'username':username, 'password': password})
       .then(response => {
         this.saveToken(response.data['token'], username)})
       .catch(error => alert('Wrong value of username or password'));
@@ -104,13 +106,21 @@ class App extends Component {
     }
 
     const _pullData = (url) => {
-      const key = url.split('/').pop();
+      const key = url.slice(0, -1).split('/').pop();
       fetcher(url, key);
     }
 
     this.state.api.forEach(url => {
       _pullData(url);
     })
+  }
+
+  createItem(url, data) {
+    const headers = this.getHeaders();
+    axios.post(this.apiPath + url, data, {'headers': headers}).then(response => {
+      alert('Successfully created');
+      this.pullData();
+    }).catch(error => console.log('Something goes wrong', error));
   }
 
   componentDidMount() {
@@ -128,6 +138,7 @@ class App extends Component {
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
                   <Route path='projects' element={<ProjectList projects={this.state.projects} deleteItem={(item, id) => this.deleteItem(item, id) }/>} />
                     <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
+                    <Route path='projects/create' element={<CreateProject id={this.state.user.id} createProject={(url, data) => this.createItem(url, data)}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
                     projects={this.state.projects} users={this.state.users} deleteItem={(item, id) => this.deleteItem(item, id)} />} />
                   <Route path='users' element={<UsersList users={this.state.users}/>} />

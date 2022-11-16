@@ -9,8 +9,20 @@ class CreateProject extends Component {
 			"projectName": "",
 			"link": "",
 			"description": "",
-			"projectTeam": [props.id],
+			"projectTeam": ['1'],
 		}
+	}
+
+	handleSelect(target) {
+		let optionList = this.state.projectTeam;
+		[...target.selectedOptions].forEach(option => {
+			if (this.state.projectTeam.includes(option.value)) {
+				optionList.splice(optionList.indexOf(option.value), 1);
+			} else {
+				optionList.push(option.value);
+			}
+		})
+		this.setState({[target.name]: optionList});
 	}
 
 	handleChange(target) {
@@ -40,8 +52,17 @@ class CreateProject extends Component {
 						</Form.Group>
 
 						<Form.Group className="mb-3" controlId="formBasicDescription">
-						<Form.Label>Description</Form.Label>
-							<Form.Control type="text" name="description" placeholder='Project description' onChange={({target}) => this.handleChange(target)}/>
+							<Form.Label>Description</Form.Label>
+							<Form.Control type="textarea" name="description" placeholder='Project description' onChange={({target}) => this.handleChange(target)}/>
+						</Form.Group>
+
+						<Form.Group className="mb-3" controlId="formBasicProjectTeam">
+							<Form.Label>Project team</Form.Label>
+							<Form.Select multiple={true} name="projectTeam" value={this.state.projectTeam} onChange={({target}) => this.handleSelect(target)}>
+          			{this.props.users.map(user => {
+									return <option key={`${user.id}`} value={`${user.id}`}>{`${user.username}`}</option>
+								})}
+        			</Form.Select>
 						</Form.Group>
 
 						<Link className='btn btn-primary' to='../projects/' 

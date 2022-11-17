@@ -19,7 +19,7 @@ class CreateTodo extends Component {
 		this.setState({[target.name]: (target.name === "isActive") ? target.checked : target.value});
 	}
 
-	handleSubmit(event) {
+	handleSubmit() {
 		this.createTodo('todo/', this.state);
 	}
 
@@ -47,7 +47,7 @@ class CreateTodo extends Component {
        			</Form.Group>
 
 						<Link className='btn btn-primary' to='../todo/' 
-										onClick={(event) => this.handleSubmit(event)}>Create</Link>
+										onClick={() => this.handleSubmit()}>Create</Link>
 					</Form >
 				</div>
 			</div>

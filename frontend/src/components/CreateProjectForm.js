@@ -11,7 +11,7 @@ class CreateProject extends Component {
 			"projectName": "",
 			"link": "",
 			"description": "",
-			"projectTeam": ['1'],
+			"projectTeam": [],
 		}
 	}
 
@@ -31,7 +31,7 @@ class CreateProject extends Component {
 		this.setState({[target.name]: target.value});
 	}
 
-	handleSubmit(event) {
+	handleSubmit() {
 		this.createProject('projects/', this.state);
 	}
 
@@ -68,7 +68,7 @@ class CreateProject extends Component {
 						</Form.Group>
 
 						<Link className='btn btn-primary' to='../projects/' 
-										onClick={(event) => this.handleSubmit(event)}>Create</Link>
+										onClick={() => this.handleSubmit()}>Create</Link>
 					</Form >
 				</div>
 			</div>

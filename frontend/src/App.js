@@ -124,6 +124,17 @@ class App extends Component {
     }).catch(error => console.log('Something goes wrong', error));
   }
 
+  searchItem(itemName) {
+    if (itemName === '') {
+      this.pullData();
+      return;
+    }
+    const searchedProjects = this.state.projects.filter(project => {
+      return project.projectName.toLowerCase().includes(itemName.toLowerCase())
+    });
+    this.setState({'projects': searchedProjects});
+  }
+
   componentDidMount() {
     this.restoreToken();
   }
@@ -133,7 +144,7 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} user={this.state.user}/>
+            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} user={this.state.user} searchItem={(itemName) => {this.searchItem(itemName)}}/>
               <Routes>
                 <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />

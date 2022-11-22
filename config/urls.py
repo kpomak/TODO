@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.generic.base import TemplateView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from graphene_django.views import GraphQLView
@@ -32,6 +33,7 @@ urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("api-auth/", include("rest_framework.urls")),
     path("api/", include(router.urls), name="api"),
+    path("", TemplateView.as_view(template_name="index.html"), name="home"),
     path("api-token-auth/", views.obtain_auth_token, name="toke_auth"),
     path("api-jwt/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api-jwt/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

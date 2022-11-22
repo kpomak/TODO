@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Card from 'react-bootstrap/Card';
 
 
@@ -21,7 +21,7 @@ function ProjectDetail( {projects} ) {
             </Card.Text>
             <div className='d-flex justify-content-between'>
               <Card.Link href={`${filteredProject.link}`}>{filteredProject.link}</Card.Link>
-              <Card.Link className='btn btn-primary' href={`${id}/edit/`}>Edit</Card.Link>
+              <Link className='btn btn-primary' to={`edit/`}>Edit</Link>
             </div>
           </Card.Body>
         </Card>

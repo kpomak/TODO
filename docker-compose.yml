@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:14.6
+    restart: always
+    privileged: true
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: kpomak
+      POSTGRES_USER: kpomak
+      POSTGRES_DB: todo
+  backend:
+    build:
+      context: ./
+      dockerfile: ./config/Dockerfile
+    privileged: true
+    ports:
+      - 8080:8080
+    command:
+      bash -c "python manage.py migrate && python manage.py createusers && gunicorn config.wsgi -b 0.0.0.0:8080"
+    depends_on:
+      - db

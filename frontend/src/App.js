@@ -14,6 +14,7 @@ import Cookies from 'universal-cookie';
 import LoginForm from './components/LoginForm';
 import CreateProject from './components/CreateProjectForm';
 import CreateTodo from './components/CreateTodo';
+import EditProject from './components/EditProject';
 
 
 class App extends Component {
@@ -26,7 +27,7 @@ class App extends Component {
       'projects': [],
       'todo': [],
       'token': '',
-      'user': {}, 
+      'user': {},
       'username': '',
       'api': [
         this.apiPath + 'users/',
@@ -34,14 +35,6 @@ class App extends Component {
         this.apiPath + 'todo/',
       ]
     }
-  }
-
-  deleteItem(path, id) {
-    const headers = this.getHeaders();
-    axios.delete(this.apiPath + `${path}/${id}`, {'headers': headers})
-      .then(response => {
-        this.pullData()
-      }).catch(error => console.log(error));
   }
 
   getToken (username, password) {
@@ -64,7 +57,7 @@ class App extends Component {
     const cookie = new Cookies();
     cookie.set('token', token);
     cookie.set('username', username);
-    cookie.set('SameSite', 'None');
+    cookie.set('SameSite', 'Lax');
     this.setState({'token': token, 'username': username}, () => this.pullData());
   }
 
@@ -75,7 +68,7 @@ class App extends Component {
   restoreToken () {
     const cookie = new Cookies();
     const token = cookie.get('token');
-    const username = cookie.get('username')
+    const username = cookie.get('username');
     this.setState({'token': token, 'username': username}, () => this.pullData());
   }
 
@@ -135,6 +128,22 @@ class App extends Component {
     this.setState({'projects': searchedProjects});
   }
 
+  updateItem(path, id, data) {
+    const headers = this.getHeaders();
+    axios.put(this.apiPath + `${path}/${id}/`, data, {'headers': headers})
+      .then(response => {
+        this.pullData()
+      }).catch(error => console.log(error));
+  }
+
+  deleteItem(path, id) {
+    const headers = this.getHeaders();
+    axios.delete(this.apiPath + `${path}/${id}/`, {'headers': headers})
+      .then(response => {
+        this.pullData()
+      }).catch(error => console.log(error));
+  }
+
   componentDidMount() {
     this.restoreToken();
   }
@@ -149,7 +158,8 @@ class App extends Component {
                 <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
                   <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
                   <Route path='projects' element={<ProjectList projects={this.state.projects} deleteItem={(item, id) => this.deleteItem(item, id) }/>} />
-                    <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
+                    <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects} setProject={(project) => this.setProject(project)}/>} />
+                      <Route path='projects/:id/edit' element={<EditProject projects={this.state.projects} users={this.state.users} updateProject={(path, id, data) => this.updateItem(path, id, data)}/>} />
                     <Route path='projects/create' element={<CreateProject users={this.state.users} createProject={(url, data) => this.createItem(url, data)}/>} />
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
                     projects={this.state.projects} users={this.state.users} deleteItem={(item, id) => this.deleteItem(item, id)} />} />

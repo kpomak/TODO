@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams} from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Card from 'react-bootstrap/Card';
 
 
@@ -9,6 +9,7 @@ function ProjectDetail( {projects} ) {
   const filteredProject = projects.find(project => {
     return (project.id === parseInt(id)) ? project : null
   })
+
   return (
     <div className="container-xxl">
       <div className="d-flex justify-content-center">
@@ -18,7 +19,10 @@ function ProjectDetail( {projects} ) {
             <Card.Text>
               {filteredProject.description}
             </Card.Text>
-            <Card.Link href={`${filteredProject.link}`}>{filteredProject.link}</Card.Link>
+            <div className='d-flex justify-content-between'>
+              <Card.Link href={`${filteredProject.link}`}>{filteredProject.link}</Card.Link>
+              <Link className='btn btn-primary' to={`edit/`}>Edit</Link>
+            </div>
           </Card.Body>
         </Card>
       </div>

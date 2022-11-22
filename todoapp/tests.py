@@ -88,7 +88,7 @@ class TestToDoViewSet(APITestCase):
 
 class TestJWTToken(APITestCase):
     def test_api_jwt(self):
-        CustomUser.objects.create_user(username="test", email="test@test.com", password="test", is_active=True)
+        user = CustomUser.objects.create_user(username="test", email="test@test.com", password="test", is_active=True)
 
         response = self.client.post("/api-jwt/", {"username": "test", "password": "test"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -97,3 +97,8 @@ class TestJWTToken(APITestCase):
         token = response.data["access"]
         response = self.client.post("/api-jwt/verify/", {"token": token}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        put_data = {"username": "test", "email": "test@test.uk", "password": "test"}
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + token)
+        put_response = self.client.put(f"/api/users/{user.id}/", put_data, format="json")
+        self.assertEqual(put_response.status_code, status.HTTP_200_OK)

@@ -1,4 +1,6 @@
+from . import environment as env
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,14 +10,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-0h(ynd%mblp1)50hetx-8(1p!9j*-ajlrkpb-$m^2n48mqnhgs"
+SECRET_KEY = env.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://0.0.0.0",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = "authapp.CustomUser"
 
@@ -77,11 +85,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         # "ENGINE": "django.db.backends.sqlite3",
-        # "NAME": BASE_DIR / "db.sqlite3",
+        # "NAME": BASE_DIR / "../db.sqlite3",
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'todo',
         'USER': 'kpomak',
-        'PASSWORD': 'kpomak',
+        'PASSWORD': env.DB_PASSWORD,
         'HOST': 'db',
         'PORT': '5432'
     }
@@ -123,7 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "frontend/build/static/"]
+# STATICFILES_DIRS = [BASE_DIR / "../frontend/build/static/"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

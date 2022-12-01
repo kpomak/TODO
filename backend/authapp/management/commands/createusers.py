@@ -6,4 +6,4 @@ class Command(BaseCommand):
     help = "This command create some users from fixture"
 
     def handle(self, *args, **options):
-        call_command("loaddata", "users_data.json", "projects_data.json", "todo_data.json")
+        call_command("loaddata", "group_data.json", "users_data.json", "projects_data.json", "todo_data.json")

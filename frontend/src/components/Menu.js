@@ -49,7 +49,7 @@ class Header extends Component{
               {this.auth()
                 ? <Link className='nav-link' to="/" onClick={() => this.logOut()}>Logout</Link>
                 : <Link className='nav-link' to="login">Sign in</Link>}   
-              {this.auth() ? <div className='nav-link'>{`Hi, ${this.props.user.firstName}!`}</div> : null }
+              {this.auth() && this.props.user ? <div className='nav-link'>{`Hi, ${this.props.user.firstName}!`}</div> : null }
             </Nav>
             <Form className="d-flex">
               {this.state.search

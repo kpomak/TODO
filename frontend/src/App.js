@@ -15,6 +15,7 @@ import LoginForm from './components/LoginForm';
 import CreateProject from './components/CreateProjectForm';
 import CreateTodo from './components/CreateTodo';
 import EditProject from './components/EditProject';
+import CreateCustomUser from './components/CreateUserForm.js';
 
 
 class App extends Component {
@@ -44,13 +45,11 @@ class App extends Component {
       .catch(error => alert('Wrong value of username or password'));
   }
 
-  setUser(key) {
-    if (key !== 'users') return;
-    this.setState({'user': this.state.users.find(user => {
-      return (user.username === this.state.username)
-        ? user
-        : null})
-    });
+  setUser() {
+    const user = this.state.users.find(user => {
+      return user.username === this.state.username
+    })
+    this.setState({'user': user});
   }
 
   saveToken (token, username='') {
@@ -89,7 +88,8 @@ class App extends Component {
         result.push(...response.data.results);
         if (!response.data.next) {
           this.setState({[key]: result}, () => {
-            this.setUser(key);
+            if (key !== 'users') return;
+            this.setUser();
           });
           return;
         }
@@ -164,7 +164,8 @@ class App extends Component {
                   <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
                     projects={this.state.projects} users={this.state.users} deleteItem={(item, id) => this.deleteItem(item, id)} />} />
                     <Route path='todo/create' element={<CreateTodo projects={this.state.projects} user={this.state.user} createTodo={(url, data) => this.createItem(url,data)}/>}/>
-                  <Route path='users' element={<UsersList users={this.state.users}/>} />
+                  <Route path='users' element={<UsersList users={this.state.users} auth={() => this.isAuthentificated()}/>} />
+                   <Route path='users/create' element={<CreateCustomUser isAuthentificated={() => this.isAuthentificated()} createCustomUser={(url, data) => this.createItem(url, data)}/>} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>
           </BrowserRouter>

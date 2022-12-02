@@ -18,7 +18,7 @@ const ProjectInstance = ({project, deleteItem}) => {
 	);
 };
 
-const ProjectList = ({projects, deleteItem}) => {
+const ProjectList = ({projects, deleteItem, auth}) => {
   return (
     <div className="d-flex align-items-center flex-column">
       <Table striped bordered hover>
@@ -35,7 +35,7 @@ const ProjectList = ({projects, deleteItem}) => {
         {projects.map(project => <ProjectInstance key={project.id} project={project} deleteItem={deleteItem}/>)}
         </tbody>
       </Table>
-      <Link to='create' className='btn btn-primary'>Create new</Link>
+      {auth() ? <Link to='create' className='btn btn-primary'>Create new</Link> : <h2>Please login first!</h2>}
     </div>
   );
 }

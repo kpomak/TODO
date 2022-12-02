@@ -4,7 +4,7 @@ import Button from "react-bootstrap/esm/Button";
 import { Link } from "react-router-dom";
 
 
-const ToDoInstance = ({toDo, projects, users, deleteItem}) => {
+const ToDoInstance = ({toDo, projects, users, deleteItem, auth}) => {
 	return (
 		<tr>
           <td>{toDo.id}</td>
@@ -26,7 +26,7 @@ const ToDoInstance = ({toDo, projects, users, deleteItem}) => {
 	);
 };
 
-const ToDoList = ({toDoTasks, projects, users, deleteItem}) => {
+const ToDoList = ({toDoTasks, projects, users, deleteItem, auth}) => {
   return (
     <div className="d-flex align-items-center flex-column">
       <Table striped bordered hover>
@@ -43,7 +43,7 @@ const ToDoList = ({toDoTasks, projects, users, deleteItem}) => {
         {toDoTasks.map(toDo => <ToDoInstance key={toDo.id} toDo={toDo} projects={projects} users={users} deleteItem={deleteItem}/>)}
         </tbody>
       </Table>
-      <Link to='create' className='btn btn-primary'>Create new</Link>
+      {auth() ? <Link to='create' className='btn btn-primary'>Create new</Link> : <h2>Please login first!</h2>}
     </div>
   );
 }

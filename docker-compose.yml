@@ -10,7 +10,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: kpomak
       POSTGRES_USER: kpomak
       POSTGRES_DB: todo
   backend:
@@ -19,19 +19,24 @@ services:
       dockerfile: ./Dockerfile
     privileged: true
     ports:
-      - 8000:8000
-    command: bash -c "./config/wait_postgres.sh db && python manage.py migrate && python manage.py createusers && gunicorn config.wsgi -b 0.0.0.0:8000"
+      - 8010:8010
+    command: bash -c "./config/wait_postgres.sh db && python manage.py migrate && python manage.py createusers && gunicorn config.wsgi:application --forwarded-allow-ips="kpomak.ru" -b 0.0.0.0:8010"
     depends_on:
       - db
   nginx:
     build: ./nginx
     ports:
-      - 8010:80
+      - 8443:8443
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
       - backend
   frontend:
     build: ./frontend
     ports:
       - 80:80
+      - 443:443
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
     depends_on:
       - nginx

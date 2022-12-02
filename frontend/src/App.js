@@ -21,7 +21,7 @@ import CreateCustomUser from './components/CreateUserForm.js';
 class App extends Component {
   constructor(props) {
     super(props)
-    this.serverPath = "http://localhost:8000/"
+    this.serverPath = "https://kpomak.ru:8443/"
     this.apiPath = this.serverPath + "api/"
     this.state = {
       'users': [],
@@ -153,19 +153,57 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} user={this.state.user} searchItem={(itemName) => {this.searchItem(itemName)}}/>
+            <Header
+              isAuthentificated={() => this.isAuthentificated()}
+              saveToken={() => {this.saveToken('')}}
+              user={this.state.user}
+              searchItem={(itemName) => {this.searchItem(itemName)}}
+              />
               <Routes>
-                <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
-                  <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
-                  <Route path='projects' element={<ProjectList projects={this.state.projects} deleteItem={(item, id) => this.deleteItem(item, id) }/>} />
-                    <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects} setProject={(project) => this.setProject(project)}/>} />
-                    <Route path='projects/:id/edit' element={<EditProject projects={this.state.projects} users={this.state.users} updateProject={(path, id, data) => this.updateItem(path, id, data)}/>} />
-                    <Route path='projects/create' element={<CreateProject users={this.state.users} createProject={(url, data) => this.createItem(url, data)}/>} />
-                  <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
-                    projects={this.state.projects} users={this.state.users} deleteItem={(item, id) => this.deleteItem(item, id)} />} />
-                    <Route path='todo/create' element={<CreateTodo projects={this.state.projects} user={this.state.user} createTodo={(url, data) => this.createItem(url,data)}/>}/>
-                  <Route path='users' element={<UsersList users={this.state.users} auth={() => this.isAuthentificated()}/>} />
-                   <Route path='users/create' element={<CreateCustomUser isAuthentificated={() => this.isAuthentificated()} createCustomUser={(url, data) => this.createItem(url, data)}/>} />
+                <Route path='/' element={<Home
+                  isAuthentificated={() => this.isAuthentificated()}
+                  />} />
+                  <Route path='login' element={<LoginForm
+                    getToken={(username, password) => this.getToken(username, password)}
+                    />} />
+                  <Route path='projects' element={<ProjectList
+                    projects={this.state.projects}
+                    deleteItem={(item, id) => this.deleteItem(item, id)}
+                    auth={() => this.isAuthentificated()}
+                    />} />
+                    <Route path='projects/:id' element={<ProjectDetail
+                      projects={this.state.projects}
+                      setProject={(project) => this.setProject(project)}
+                      />} />
+                    <Route path='projects/:id/edit' element={<EditProject
+                      projects={this.state.projects}
+                      users={this.state.users}
+                      updateProject={(path, id, data) => this.updateItem(path, id, data)}
+                      />} />
+                    <Route path='projects/create' element={<CreateProject
+                      users={this.state.users}
+                      createProject={(url, data) => this.createItem(url, data)}
+                      />} />
+                  <Route path='todo'element={<ToDoList
+                    toDoTasks={this.state.todo}
+                    projects={this.state.projects}
+                    users={this.state.users}
+                    deleteItem={(item, id) => this.deleteItem(item, id)}
+                    auth={() => this.isAuthentificated()}
+                    />} />
+                    <Route path='todo/create' element={<CreateTodo
+                      projects={this.state.projects}
+                      isAuthentificated={() => this.isAuthentificated()}
+                      user={this.state.user}
+                      createTodo={(url, data) => this.createItem(url,data)}
+                      />} />
+                  <Route path='users' element={<UsersList
+                    users={this.state.users}
+                    auth={() => this.isAuthentificated()}/>} />
+                   <Route path='users/create' element={<CreateCustomUser
+                    isAuthentificated={() => this.isAuthentificated()}
+                    createCustomUser={(url, data) => this.createItem(url, data)}
+                    />} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>
           </BrowserRouter>

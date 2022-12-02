@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Form from 'react-bootstrap/Form';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 
 class CreateTodo extends Component {
 	constructor(props) {
@@ -8,7 +8,7 @@ class CreateTodo extends Component {
 		this.createTodo = this.props.createTodo
 		this.projects = this.props.projects.filter(project => project.projectTeam.includes(this.props.user.id))
 		this.state = {
-			"project": this.projects[0].id,
+			"project": (this.projects) ? this.projects[0].id : 0,
 			"user": this.props.user.id,
 			"body": "Template text",
 			"isActive": false
@@ -27,6 +27,7 @@ class CreateTodo extends Component {
 		return(
 			<div className="container-xxl">
 				<div className="d-flex justify-content-center">
+					{!this.projects ? <Navigate to="../projects" /> : null}
 					<Form>
 						<Form.Group className="mb-3" controlId="formBasicProject">
 							<Form.Label>Project</Form.Label>

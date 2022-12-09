@@ -17,6 +17,15 @@ class ProjectModelViewSet(ModelViewSet):
     pagination_class = ProjectLimitOffsetPagination
     filterset_class = ProjectFilter
 
+    def destroy(self, request, *args, **kwargs):
+        instanse = self.get_object()
+        serializer = ProjectModelSerializer(
+            instanse, data={"deleted": True}, context={"request": request}, partial=True
+        )
+        serializer.is_valid()
+        serializer.save()
+        return Response(serializer.data)
+
 
 class ToDoLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 20

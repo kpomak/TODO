@@ -12,48 +12,51 @@ import Home from './components/Home';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import LoginForm from './components/LoginForm';
+import CreateProject from './components/CreateProjectForm';
+import CreateTodo from './components/CreateTodo';
+import EditProject from './components/EditProject';
+import CreateCustomUser from './components/CreateUserForm.js';
 
 
 class App extends Component {
   constructor(props) {
     super(props)
-    const apiPath = 'http://localhost:8000/api/'
+    this.serverPath = "https://kpomak.ru:8443/"
+    this.apiPath = this.serverPath + "api/"
     this.state = {
       'users': [],
       'projects': [],
       'todo': [],
       'token': '',
+      'user': {},
       'username': '',
-      'userFirstName': '',
       'api': [
-        apiPath + 'users',
-        apiPath + 'projects',
-        apiPath + 'todo',
+        this.apiPath + 'users/',
+        this.apiPath + 'projects/',
+        this.apiPath + 'todo/',
       ]
     }
   }
 
   getToken (username, password) {
-    axios.post('http://localhost:8000/api-token-auth/', {'username':username, 'password': password})
+    axios.post(this.serverPath + 'api-token-auth/', {'username':username, 'password': password})
       .then(response => {
         this.saveToken(response.data['token'], username)})
       .catch(error => alert('Wrong value of username or password'));
   }
 
-  setUsername(key) {
-    if (key !== 'users') return;
-    this.setState({'userFirstName': this.state.users.find(user => {
-      return (user.username === this.state.username)
-        ? user
-        : null}).firstName
-    });
+  setUser() {
+    const user = this.state.users.find(user => {
+      return user.username === this.state.username
+    })
+    this.setState({'user': user});
   }
 
   saveToken (token, username='') {
     const cookie = new Cookies();
     cookie.set('token', token);
     cookie.set('username', username);
-    cookie.set('SameSite', 'None');
+    cookie.set('SameSite', 'Lax');
     this.setState({'token': token, 'username': username}, () => this.pullData());
   }
 
@@ -64,7 +67,7 @@ class App extends Component {
   restoreToken () {
     const cookie = new Cookies();
     const token = cookie.get('token');
-    const username = cookie.get('username')
+    const username = cookie.get('username');
     this.setState({'token': token, 'username': username}, () => this.pullData());
   }
 
@@ -84,23 +87,61 @@ class App extends Component {
       axios.get(url, {'headers': headers}).then(response => {
         result.push(...response.data.results);
         if (!response.data.next) {
-          this.setState({[key]: result}, () => this.setUsername(key));
+          this.setState({[key]: result}, () => {
+            if (key !== 'users') return;
+            this.setUser();
+          });
           return;
         }
         fetcher(response.data.next, key, result);
       }).catch(() => {
-        this.setState({[key]: [], 'userFirstName': ''});
+        this.setState({[key]: [], 'user': {}});
       });
     }
 
     const _pullData = (url) => {
-      const key = url.split('/').pop();
+      const key = url.slice(0, -1).split('/').pop();
       fetcher(url, key);
     }
 
     this.state.api.forEach(url => {
       _pullData(url);
     })
+  }
+
+  createItem(url, data) {
+    const headers = this.getHeaders();
+    axios.post(this.apiPath + url, data, {'headers': headers}).then(response => {
+      alert('Successfully created');
+      this.pullData();
+    }).catch(error => console.log('Something goes wrong', error));
+  }
+
+  searchItem(itemName) {
+    if (itemName === '') {
+      this.pullData();
+      return;
+    }
+    const searchedProjects = this.state.projects.filter(project => {
+      return project.projectName.toLowerCase().includes(itemName.toLowerCase())
+    });
+    this.setState({'projects': searchedProjects});
+  }
+
+  updateItem(path, id, data) {
+    const headers = this.getHeaders();
+    axios.put(this.apiPath + `${path}/${id}/`, data, {'headers': headers})
+      .then(response => {
+        this.pullData()
+      }).catch(error => console.log(error));
+  }
+
+  deleteItem(path, id) {
+    const headers = this.getHeaders();
+    axios.delete(this.apiPath + `${path}/${id}/`, {'headers': headers})
+      .then(response => {
+        this.pullData()
+      }).catch(error => console.log(error));
   }
 
   componentDidMount() {
@@ -112,15 +153,57 @@ class App extends Component {
       <div className="sub_body">
         <div className="top">
           <BrowserRouter>
-            <Header isAuthentificated={() => this.isAuthentificated()} saveToken={() => {this.saveToken('')}} userFirstName={this.state.userFirstName}/>
+            <Header
+              isAuthentificated={() => this.isAuthentificated()}
+              saveToken={() => {this.saveToken('')}}
+              user={this.state.user}
+              searchItem={(itemName) => {this.searchItem(itemName)}}
+              />
               <Routes>
-                <Route path='/' element={<Home isAuthentificated={() => this.isAuthentificated()}/>} />
-                  <Route path='login' element={<LoginForm getToken={(username, password) => this.getToken(username, password)}/>} />
-                  <Route path='projects' element={<ProjectList projects={this.state.projects}/>} />
-                    <Route path='projects/:id' element={<ProjectDetail projects={this.state.projects}/>} />
-                  <Route path='todo' element={<ToDoList toDoTasks={this.state.todo}
-                    projects={this.state.projects} users={this.state.users}/>} />
-                  <Route path='users' element={<UsersList users={this.state.users}/>} />
+                <Route path='/' element={<Home
+                  isAuthentificated={() => this.isAuthentificated()}
+                  />} />
+                  <Route path='login' element={<LoginForm
+                    getToken={(username, password) => this.getToken(username, password)}
+                    />} />
+                  <Route path='projects' element={<ProjectList
+                    projects={this.state.projects}
+                    deleteItem={(item, id) => this.deleteItem(item, id)}
+                    auth={() => this.isAuthentificated()}
+                    />} />
+                    <Route path='projects/:id' element={<ProjectDetail
+                      projects={this.state.projects}
+                      setProject={(project) => this.setProject(project)}
+                      />} />
+                    <Route path='projects/:id/edit' element={<EditProject
+                      projects={this.state.projects}
+                      users={this.state.users}
+                      updateProject={(path, id, data) => this.updateItem(path, id, data)}
+                      />} />
+                    <Route path='projects/create' element={<CreateProject
+                      users={this.state.users}
+                      createProject={(url, data) => this.createItem(url, data)}
+                      />} />
+                  <Route path='todo'element={<ToDoList
+                    toDoTasks={this.state.todo}
+                    projects={this.state.projects}
+                    users={this.state.users}
+                    deleteItem={(item, id) => this.deleteItem(item, id)}
+                    auth={() => this.isAuthentificated()}
+                    />} />
+                    <Route path='todo/create' element={<CreateTodo
+                      projects={this.state.projects}
+                      isAuthentificated={() => this.isAuthentificated()}
+                      user={this.state.user}
+                      createTodo={(url, data) => this.createItem(url,data)}
+                      />} />
+                  <Route path='users' element={<UsersList
+                    users={this.state.users}
+                    auth={() => this.isAuthentificated()}/>} />
+                   <Route path='users/create' element={<CreateCustomUser
+                    isAuthentificated={() => this.isAuthentificated()}
+                    createCustomUser={(url, data) => this.createItem(url, data)}
+                    />} />
                   <Route path='*' element={<NotFound404 />} />
               </Routes>
           </BrowserRouter>

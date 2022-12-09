@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:14.6
+    env_file:
+      - .env
+    restart: always
+    privileged: true
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: kpomak
+      POSTGRES_USER: kpomak
+      POSTGRES_DB: todo
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    privileged: true
+    ports:
+      - 8010:8010
+    command: bash -c "./config/wait_postgres.sh db && python manage.py migrate && python manage.py createusers && gunicorn config.wsgi:application --forwarded-allow-ips="kpomak.ru" -b 0.0.0.0:8010"
+    depends_on:
+      - db
+  nginx:
+    build: ./nginx
+    ports:
+      - 8443:8443
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    depends_on:
+      - backend
+  frontend:
+    build: ./frontend
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    depends_on:
+      - nginx

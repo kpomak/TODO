@@ -1,8 +1,10 @@
 import React from "react";
 import Table from 'react-bootstrap/Table';
+import Button from "react-bootstrap/esm/Button";
+import { Link } from "react-router-dom";
 
 
-const ToDoInstance = ({toDo, projects, users}) => {
+const ToDoInstance = ({toDo, projects, users, deleteItem, auth}) => {
 	return (
 		<tr>
           <td>{toDo.id}</td>
@@ -17,26 +19,34 @@ const ToDoInstance = ({toDo, projects, users}) => {
             }).username}
           </td>
           <td>{toDo.body}</td>
+          <td>
+            <Button onClick={() => {deleteItem('todo', toDo.id)}}>Delete</Button>
+          </td>
         </tr>
 	);
 };
 
-const ToDoList = ({toDoTasks, projects, users}) => {
+const ToDoList = ({toDoTasks, projects, users, deleteItem, auth}) => {
   return (
-    <Table striped bordered hover>
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>Проект</th>
-          <th>Автор</th>
-          <th>Заметка</th>
-        </tr>
-      </thead>
-      <tbody>
-	  	{toDoTasks.map(toDo => <ToDoInstance key={toDo.id} toDo={toDo} projects={projects} users={users} />)}
-      </tbody>
-    </Table>
+    <div className="d-flex align-items-center flex-column">
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>Проект</th>
+            <th>Автор</th>
+            <th>Заметка</th>
+            <th>Удалить</th>
+          </tr>
+        </thead>
+        <tbody>
+        {toDoTasks.map(toDo => <ToDoInstance key={toDo.id} toDo={toDo} projects={projects} users={users} deleteItem={deleteItem}/>)}
+        </tbody>
+      </Table>
+      {auth() ? <Link to='create' className='btn btn-primary'>Create new</Link> : <h2>Please login first!</h2>}
+    </div>
   );
 }
 
 export default ToDoList;
+

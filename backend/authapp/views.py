@@ -1,5 +1,6 @@
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import GenericViewSet
 
 from authapp.models import CustomUser
@@ -10,7 +11,8 @@ class CustomUserLimitOffsetPagination(LimitOffsetPagination):
     default_limit = 30
 
 
-class CustomUserModelViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class CustomUserModelViewSet(CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+    permission_classes = [AllowAny]
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserModelSerializer
     pagination_class = CustomUserLimitOffsetPagination

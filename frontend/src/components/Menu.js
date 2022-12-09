@@ -12,6 +12,23 @@ class Header extends Component{
     super(props)
     this.auth = this.props.isAuthentificated
     this.logOut = this.props.saveToken
+    this.searchItem = this.props.searchItem
+    this.state = {
+      "search": ""
+    }
+  }
+
+  handlePress(target) {
+    target.nextElementSibling.value = "";
+    this.setState({"search": ""}, () => this.searchItem(""))
+  }
+
+  handleChange(target) {
+    this.setState({[target.name]: target.value})
+  }
+
+  handleSubmit() {
+    this.searchItem(this.state.search)
   }
 
   render() {
@@ -31,17 +48,24 @@ class Header extends Component{
               <Link className='nav-link' to='/'>Home</Link>
               {this.auth()
                 ? <Link className='nav-link' to="/" onClick={() => this.logOut()}>Logout</Link>
-                : <Link className='nav-link' to="login">Sign in</Link>}
-              {this.auth() ? <div className='nav-link'>{`Hi, ${this.props.userFirstName}!`}</div> : null }
+                : <Link className='nav-link' to="login">Sign in</Link>}   
+              {this.auth() && this.props.user ? <div className='nav-link'>{`Hi, ${this.props.user.firstName}!`}</div> : null }
             </Nav>
             <Form className="d-flex">
+              {this.state.search
+                ?<Button className="me-2" type="button" variant="outline-success" onClick={({target}) => this.handlePress(target)}>Clear</Button>
+                : null}
               <Form.Control
                 type="search"
-                placeholder="Search"
+                name="search"
+                placeholder="Project search"
                 className="me-2"
                 aria-label="Search"
+                onChange={({target}) => this.handleChange(target)}
               />
-              <Button variant="outline-success">Search</Button>
+              <Link className='btn btn-primary' to='../projects/' 
+										onClick={() => this.handleSubmit()}>Search</Link>
+
             </Form>
           </Navbar.Collapse>
         </Container>
